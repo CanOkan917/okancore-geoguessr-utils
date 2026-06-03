@@ -1,11 +1,6 @@
 export interface Config {
   radius: number;
   enabled: boolean;
-  multiRound: boolean;
-  circleColor: string;
-  circleOpacity: number;
-  strokeColor: string;
-  strokeWeight: number;
 }
 
 export interface Coords {

@@ -4,11 +4,6 @@ import type { Config } from '../types';
 const DEFAULTS: Config = {
   radius: 500,
   enabled: true,
-  multiRound: true,
-  circleColor: '#00e5ff',
-  circleOpacity: 0.18,
-  strokeColor: '#00e5ff',
-  strokeWeight: 2.5,
 };
 
 function load(): Config {

@@ -56,7 +56,7 @@ watchURL(() => {
 function injectFont() {
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = 'https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap';
+  link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
   document.head.appendChild(link);
 }
 

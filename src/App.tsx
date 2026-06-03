@@ -59,8 +59,8 @@ export default function App() {
     dragStart.current = { mx: e.clientX, my: e.clientY, px: pos.x, py: pos.y };
   }
 
-  function commitRadius() {
-    const v = Math.max(10, Math.min(20000, parseInt(radiusDraft, 10) || cfg.radius));
+  function commitRadius(raw: string) {
+    const v = Math.max(10, Math.min(3000, parseInt(raw, 10) || cfg.radius));
     setRadiusDraft(String(v));
     update({ radius: v });
   }
@@ -70,7 +70,7 @@ export default function App() {
   return (
     <div id="ogu" style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}>
       <div className="ogu-hdr" onMouseDown={onDragStart}>
-        <span className="ogu-ttl">◎ Okancore GeoGuessr Utils</span>
+        <span className="ogu-ttl">Okancore GeoGuessr Utils</span>
         <button
           className="ogu-tog"
           onMouseDown={e => e.stopPropagation()}
@@ -94,40 +94,42 @@ export default function App() {
             />
           </Row>
 
-          <Row label="Multi-round">
-            <Toggle
-              checked={cfg.multiRound}
-              onChange={v => update({ multiRound: v })}
-            />
-          </Row>
-
           <hr className="ogu-hr" />
 
-          <Row label="Radius">
-            <div className="ogu-field">
-              <input
-                type="number"
-                className="ogu-num"
-                value={radiusDraft}
-                min={10}
-                max={20000}
-                step={10}
-                onChange={e => setRadiusDraft(e.target.value)}
-                onBlur={commitRadius}
-                onKeyDown={e => { if (e.key === 'Enter') commitRadius(); }}
-              />
-              <span className="ogu-unit">km</span>
+          <div className="ogu-radius">
+            <div className="ogu-row">
+              <span className="ogu-lbl">Radius</span>
+              <div className="ogu-field">
+                <input
+                  type="number"
+                  className="ogu-num"
+                  value={radiusDraft}
+                  min={10}
+                  max={3000}
+                  step={10}
+                  onChange={e => setRadiusDraft(e.target.value)}
+                  onBlur={e => commitRadius(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') commitRadius(radiusDraft); }}
+                />
+                <span className="ogu-unit">km</span>
+              </div>
             </div>
-          </Row>
-
-          <Row label="Color">
             <input
-              type="color"
-              className="ogu-color"
-              value={cfg.circleColor}
-              onChange={e => update({ circleColor: e.target.value, strokeColor: e.target.value })}
+              type="range"
+              className="ogu-range"
+              value={cfg.radius}
+              min={10}
+              max={3000}
+              step={10}
+              onChange={e => {
+                const v = Number(e.target.value);
+                setRadiusDraft(String(v));
+                update({ radius: v });
+                circleManager.setCfg({ ...cfg, radius: v });
+                circleManager.applyAndDraw();
+              }}
             />
-          </Row>
+          </div>
 
           <hr className="ogu-hr" />
 
@@ -146,11 +148,11 @@ export default function App() {
 
           {debug && (
             <div className="ogu-dbg">
-              <DbgRow label="Last event"  value={dbgState.lastEvent} />
-              <DbgRow label="Round key"   value={dbgState.roundKey} />
-              <DbgRow label="Coords"      value={dbgState.coords} />
-              <DbgRow label="Maps"        value={String(dbgState.mapCount)} />
-              <DbgRow label="Circle"      value={dbgState.circleStatus} />
+              <DbgRow label="Last event"   value={dbgState.lastEvent} />
+              <DbgRow label="Round key"    value={dbgState.roundKey} />
+              <DbgRow label="Coords"       value={dbgState.coords} />
+              <DbgRow label="Maps"         value={String(dbgState.mapCount)} />
+              <DbgRow label="Circle"       value={dbgState.circleStatus} />
               <DbgRow label="API roundNum" value={dbgState.rawRoundNum} />
               <DbgRow label="API rounds[]" value={dbgState.roundsLen} />
             </div>

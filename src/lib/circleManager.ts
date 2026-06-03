@@ -47,11 +47,6 @@ class CircleManager {
     this.drop();
     this.coords = null;
 
-    if (!this.cfg?.multiRound) {
-      dbg('onNewRound → multiRound OFF, skip redraw');
-      return;
-    }
-
     this.cancelTimer();
     this.needsRedraw = true;
     this.fallbackTimer = setTimeout(() => {
@@ -61,6 +56,7 @@ class CircleManager {
       }
     }, 1500);
   }
+
 
   private cancelTimer(): void {
     if (this.fallbackTimer !== null) {
@@ -136,10 +132,10 @@ class CircleManager {
       map,
       center: this.coords,
       radius: this.cfg.radius * 1000,
-      fillColor: this.cfg.circleColor,
-      fillOpacity: this.cfg.circleOpacity,
-      strokeColor: this.cfg.strokeColor,
-      strokeWeight: this.cfg.strokeWeight,
+      fillColor: '#ef4444',
+      fillOpacity: 0.15,
+      strokeColor: '#ef4444',
+      strokeWeight: 2,
       clickable: false,
       zIndex: 1,
     }) as google.maps.Circle;
