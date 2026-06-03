@@ -181,6 +181,20 @@
   flex: 1;
 }
 
+.ogu-band-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 16px;
+}
+
+.ogu-band-val {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
 /* Number input */
 .ogu-radius {
   display: flex;

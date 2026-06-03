@@ -10,8 +10,8 @@ export default defineConfig({
       userscript: {
         name: 'Okancore GeoGuessr Utils',
         namespace: 'https://github.com/canokan917/okancore-geoguessr-utils',
-        version: '1.1.1',
-        description: 'Draws a radius circle on the GeoGuessr guess map around the real location before guessing',
+        version: '1.2.0',
+        description: 'GeoGuessr training tools: circle, lat/lng lines, area bands, and street view hider — all toggleable from a draggable panel',
         author: 'Okancore',
         match: ['https://www.geoguessr.com/*'],
         grant: ['GM_getValue', 'GM_setValue', 'GM_addStyle', 'unsafeWindow'],
