@@ -1,10 +1,9 @@
 import type { Config, Coords } from '../types';
 import { dbg } from './debugStore';
+import { findGuessMap } from './findGuessMap';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const win: any = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
-
-const GUESS_KEYS = ['guess-map', 'game-layout__guess', 'guess_map'];
 
 class CircleManager {
   private maps: google.maps.Map[] = [];
@@ -94,24 +93,7 @@ class CircleManager {
   }
 
   private findGuessMap(): google.maps.Map | null {
-    for (const m of [...this.maps].reverse()) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const div = (m as any).getDiv?.() as HTMLElement | undefined;
-      if (!div?.offsetParent) continue;
-
-      let el: HTMLElement | null = div;
-      while (el && el !== document.documentElement) {
-        const cls = typeof el.className === 'string' ? el.className : '';
-        if (GUESS_KEYS.some(k => cls.includes(k))) return m;
-        if ((el as HTMLElement).dataset?.qa === 'guess-map') return m;
-        el = el.parentElement;
-      }
-    }
-
-    return [...this.maps].reverse().find(m => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return (m as any).getDiv?.()?.offsetParent;
-    }) ?? null;
+    return findGuessMap(this.maps);
   }
 
   private offsetCenter(coords: Coords, radiusKm: number): Coords {

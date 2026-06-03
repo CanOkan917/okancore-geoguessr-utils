@@ -157,6 +157,30 @@
   gap: 10px;
 }
 
+/* Lines module options */
+.ogu-lines-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ogu-line-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ogu-line-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ogu-line-row .ogu-lbl {
+  flex: 1;
+}
+
 /* Number input */
 .ogu-radius {
   display: flex;
