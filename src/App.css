@@ -1,0 +1,196 @@
+#ogu {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 999999;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  width: 246px;
+  background: rgba(7, 9, 20, 0.9);
+  border: 1px solid rgba(0, 229, 255, 0.22);
+  border-radius: 10px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 8px 36px rgba(0, 0, 0, 0.55),
+    0 0 28px rgba(0, 229, 255, 0.05);
+  color: #d6f4ff;
+  user-select: none;
+}
+
+.ogu-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px 8px;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.12);
+}
+
+.ogu-ttl {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #00e5ff;
+}
+
+.ogu-tog {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #00e5ff;
+  font-size: 17px;
+  line-height: 1;
+  padding: 0 2px;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.ogu-tog:hover { opacity: 1; }
+
+.ogu-body {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ogu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ogu-lbl {
+  font-size: 11px;
+  color: rgba(214, 244, 255, 0.62);
+  flex: 1;
+}
+
+/* Toggle Switch */
+.ogu-sw {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.ogu-sw input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.ogu-sw-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s, border-color 0.2s;
+}
+.ogu-sw input:checked + .ogu-sw-track {
+  background: rgba(0, 229, 255, 0.22);
+  border-color: rgba(0, 229, 255, 0.65);
+}
+.ogu-sw-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s, background 0.2s;
+  pointer-events: none;
+}
+.ogu-sw input:checked ~ .ogu-sw-thumb {
+  transform: translateX(16px);
+  background: #00e5ff;
+}
+
+/* Number input */
+.ogu-field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.ogu-num {
+  width: 60px;
+  padding: 4px 7px;
+  text-align: right;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 229, 255, 0.18);
+  border-radius: 5px;
+  color: #d6f4ff;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  outline: none;
+  transition: border-color 0.15s;
+  -moz-appearance: textfield;
+}
+.ogu-num::-webkit-inner-spin-button,
+.ogu-num::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.ogu-num:focus { border-color: rgba(0, 229, 255, 0.55); }
+.ogu-unit {
+  font-size: 10px;
+  color: rgba(0, 229, 255, 0.5);
+}
+
+/* Color picker */
+.ogu-color {
+  width: 34px;
+  height: 26px;
+  padding: 2px 3px;
+  cursor: pointer;
+  border: 1px solid rgba(0, 229, 255, 0.22);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.ogu-color::-webkit-color-swatch-wrapper { padding: 0; }
+.ogu-color::-webkit-color-swatch { border: none; border-radius: 3px; }
+
+/* Divider */
+.ogu-hr {
+  height: 1px;
+  background: rgba(0, 229, 255, 0.09);
+  border: none;
+  margin: 0;
+}
+
+/* Buttons */
+.ogu-btn {
+  width: 100%;
+  padding: 6px 0;
+  background: rgba(0, 229, 255, 0.07);
+  border: 1px solid rgba(0, 229, 255, 0.28);
+  border-radius: 5px;
+  color: #00e5ff;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ogu-btn:hover {
+  background: rgba(0, 229, 255, 0.16);
+  border-color: rgba(0, 229, 255, 0.6);
+}
+.ogu-btn-rm {
+  color: #ff7070;
+  background: rgba(255, 80, 80, 0.05);
+  border-color: rgba(255, 80, 80, 0.26);
+}
+.ogu-btn-rm:hover {
+  background: rgba(255, 80, 80, 0.12);
+  border-color: rgba(255, 80, 80, 0.52);
+}
