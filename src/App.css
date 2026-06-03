@@ -25,7 +25,9 @@
   justify-content: space-between;
   padding: 9px 12px 8px;
   border-bottom: 1px solid rgba(0, 229, 255, 0.12);
+  cursor: grab;
 }
+.ogu-hdr:active { cursor: grabbing; }
 
 .ogu-ttl {
   font-size: 10px;
@@ -193,4 +195,31 @@
 .ogu-btn-rm:hover {
   background: rgba(255, 80, 80, 0.12);
   border-color: rgba(255, 80, 80, 0.52);
+}
+
+/* Debug panel */
+.ogu-dbg {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 7px 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 5px;
+}
+.ogu-dbg-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 9px;
+  line-height: 1.5;
+}
+.ogu-dbg-key {
+  color: rgba(0, 229, 255, 0.45);
+  flex-shrink: 0;
+}
+.ogu-dbg-val {
+  color: rgba(214, 244, 255, 0.7);
+  text-align: right;
+  word-break: break-all;
 }

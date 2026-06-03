@@ -1,4 +1,5 @@
 import type { Config, Coords } from '../types';
+import { dbg } from './debugStore';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const win: any = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
@@ -10,6 +11,8 @@ class CircleManager {
   private circle: google.maps.Circle | null = null;
   private coords: Coords | null = null;
   private cfg: Config | null = null;
+  private needsRedraw = false;
+  private fallbackTimer: ReturnType<typeof setTimeout> | null = null;
 
   setCfg(cfg: Config): void {
     this.cfg = cfg;
@@ -17,23 +20,57 @@ class CircleManager {
 
   setCoords(coords: Coords): void {
     this.coords = coords;
+    dbg('setCoords', { coords: `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}` });
+    if (this.needsRedraw) {
+      dbg('setCoords → needsRedraw, triggering tryDraw');
+      this.tryDraw();
+    } else {
+      this.tryDrawIfNeeded();
+    }
   }
 
   addMap(map: google.maps.Map): void {
     this.maps.push(map);
-    this.tryDrawIfNeeded();
+    dbg(`addMap (total: ${this.maps.length}, needsRedraw: ${this.needsRedraw})`, {
+      mapCount: this.maps.length,
+    });
+
+    if (this.needsRedraw) {
+      this.tryDraw();
+    } else {
+      this.tryDrawIfNeeded();
+    }
   }
 
   onNewRound(): void {
-    if (this.cfg?.multiRound) {
-      this.drop();
-      this.tryDraw();
-    } else if (!this.circle) {
-      this.tryDraw();
+    dbg('onNewRound → drop', { circleStatus: 'dropping' });
+    this.drop();
+    this.coords = null;
+
+    if (!this.cfg?.multiRound) {
+      dbg('onNewRound → multiRound OFF, skip redraw');
+      return;
+    }
+
+    this.cancelTimer();
+    this.needsRedraw = true;
+    this.fallbackTimer = setTimeout(() => {
+      if (this.needsRedraw) {
+        dbg('onNewRound fallback timer → tryDraw');
+        this.tryDraw();
+      }
+    }, 1500);
+  }
+
+  private cancelTimer(): void {
+    if (this.fallbackTimer !== null) {
+      clearTimeout(this.fallbackTimer);
+      this.fallbackTimer = null;
     }
   }
 
   tryDrawIfNeeded(): void {
+    dbg(`tryDrawIfNeeded (circle: ${!!this.circle}, enabled: ${this.cfg?.enabled}, coords: ${!!this.coords})`);
     if (!this.circle && this.cfg?.enabled && this.coords) {
       this.tryDraw();
     }
@@ -44,10 +81,17 @@ class CircleManager {
   }
 
   drop(): void {
-    if (this.circle) { this.circle.setMap(null); this.circle = null; }
+    if (this.circle) {
+      dbg('drop → setMap(null)', { circleStatus: 'none' });
+      this.circle.setMap(null);
+      this.circle = null;
+    }
   }
 
   reset(): void {
+    dbg('reset (game/URL change)');
+    this.cancelTimer();
+    this.needsRedraw = false;
     this.drop();
     this.maps = [];
     this.coords = null;
@@ -68,7 +112,6 @@ class CircleManager {
       }
     }
 
-    // Fallback: most recently created visible map
     return [...this.maps].reverse().find(m => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (m as any).getDiv?.()?.offsetParent;
@@ -76,11 +119,19 @@ class CircleManager {
   }
 
   private tryDraw(): void {
-    if (!this.cfg?.enabled || !this.coords) return;
+    if (!this.cfg?.enabled || !this.coords) {
+      dbg(`tryDraw → skipped (enabled: ${this.cfg?.enabled}, coords: ${!!this.coords})`);
+      return;
+    }
     const map = this.findGuessMap();
-    if (!map) return;
+    if (!map) {
+      dbg(`tryDraw → no guess map found (total maps: ${this.maps.length})`);
+      return;
+    }
 
     this.drop();
+    this.cancelTimer();
+    this.needsRedraw = false;
     this.circle = new win.google.maps.Circle({
       map,
       center: this.coords,
@@ -92,6 +143,10 @@ class CircleManager {
       clickable: false,
       zIndex: 1,
     }) as google.maps.Circle;
+
+    dbg('tryDraw → circle drawn ✓', {
+      circleStatus: `drawn @ ${this.coords.lat.toFixed(4)}, ${this.coords.lng.toFixed(4)}`,
+    });
   }
 }
 
