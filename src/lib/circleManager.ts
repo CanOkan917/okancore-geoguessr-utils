@@ -114,6 +114,14 @@ class CircleManager {
     }) ?? null;
   }
 
+  private offsetCenter(coords: Coords, radiusKm: number): Coords {
+    const angle = Math.random() * 2 * Math.PI;
+    const dist = radiusKm * (0.35 + Math.random() * 0.45);
+    const deltaLat = (dist * Math.sin(angle)) / 111;
+    const deltaLng = (dist * Math.cos(angle)) / (111 * Math.cos(coords.lat * Math.PI / 180));
+    return { lat: coords.lat + deltaLat, lng: coords.lng + deltaLng };
+  }
+
   private tryDraw(): void {
     if (!this.cfg?.enabled || !this.coords) {
       dbg(`tryDraw → skipped (enabled: ${this.cfg?.enabled}, coords: ${!!this.coords})`);
@@ -128,9 +136,10 @@ class CircleManager {
     this.drop();
     this.cancelTimer();
     this.needsRedraw = false;
+    const center = this.offsetCenter(this.coords, this.cfg.radius);
     this.circle = new win.google.maps.Circle({
       map,
-      center: this.coords,
+      center,
       radius: this.cfg.radius * 1000,
       fillColor: '#ef4444',
       fillOpacity: 0.15,
