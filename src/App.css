@@ -113,6 +113,50 @@
   background: #3b82f6;
 }
 
+/* Module card */
+.ogu-module {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ogu-module-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ogu-module-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ogu-module-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e8e8e8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ogu-module-desc {
+  font-size: 10px;
+  color: rgba(232, 232, 232, 0.38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ogu-module-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 /* Number input */
 .ogu-radius {
   display: flex;
@@ -125,6 +169,7 @@
   align-items: center;
   gap: 6px;
 }
+
 .ogu-num {
   width: 64px;
   padding: 5px 8px;
@@ -146,6 +191,7 @@
   margin: 0;
 }
 .ogu-num:focus { border-color: rgba(59, 130, 246, 0.6); }
+
 .ogu-unit {
   font-size: 11px;
   font-weight: 500;
@@ -202,21 +248,6 @@
   cursor: pointer;
 }
 
-/* Color picker */
-.ogu-color {
-  width: 36px;
-  height: 28px;
-  padding: 2px 3px;
-  cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  -webkit-appearance: none;
-  appearance: none;
-}
-.ogu-color::-webkit-color-swatch-wrapper { padding: 0; }
-.ogu-color::-webkit-color-swatch { border: none; border-radius: 5px; }
-
 /* Divider */
 .ogu-hr {
   height: 1px;
@@ -226,6 +257,14 @@
 }
 
 /* Buttons */
+.ogu-btn-row {
+  display: flex;
+  gap: 8px;
+}
+.ogu-btn-row .ogu-btn {
+  flex: 1;
+}
+
 .ogu-btn {
   width: 100%;
   padding: 8px 0;

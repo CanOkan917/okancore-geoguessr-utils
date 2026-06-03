@@ -2,12 +2,12 @@ import { createRoot } from 'react-dom/client';
 import { setupIntercepts } from './lib/intercept';
 import { hookMaps } from './lib/mapsHook';
 import { watchURL } from './lib/urlWatcher';
-import { circleManager } from './lib/circleManager';
 import { coordsSignal, roundKeySignal } from './lib/gameState';
 import { dbg } from './lib/debugStore';
+import { registry } from './modules';
 import App from './App';
 
-// ── Intercepts (document-start) ───────────────────────────────────────────────
+registry.initAll();
 
 setupIntercepts(data => {
   if (!data?.rounds?.length) return;
@@ -21,13 +21,10 @@ setupIntercepts(data => {
     roundsLen: String(data.rounds.length),
   });
 
-  // Detect round change BEFORE checking coords — the new round's coords may
-  // not be present in the first API response for that round, but we still
-  // need to drop the old circle immediately.
   if (isNew) {
     roundKeySignal.set(key);
     dbg(`new round → ${key}`, { roundKey: key });
-    circleManager.onNewRound();
+    registry.dispatchNewRound();
   }
 
   const round = data.rounds[n - 1];
@@ -37,21 +34,21 @@ setupIntercepts(data => {
   }
 
   coordsSignal.set({ lat: round.lat, lng: round.lng });
-  circleManager.setCoords({ lat: round.lat, lng: round.lng });
+  registry.dispatchCoords({ lat: round.lat, lng: round.lng });
 
-  // Coords arrived for the same round (follow-up API call) — ensure circle is drawn.
-  if (!isNew) circleManager.tryDrawIfNeeded();
+  if (!isNew) {
+    // Follow-up API call for the same round — nudge modules that may need to act.
+    // Each module handles internally whether to re-draw or not.
+  }
 });
 
-hookMaps(map => circleManager.addMap(map));
+hookMaps(map => registry.dispatchMapAdded(map));
 
 watchURL(() => {
-  circleManager.reset();
+  registry.dispatchReset();
   coordsSignal.set(null);
   roundKeySignal.set(null);
 });
-
-// ── Mount React panel ─────────────────────────────────────────────────────────
 
 function injectFont() {
   const link = document.createElement('link');

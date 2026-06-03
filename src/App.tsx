@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
-import { useConfig } from './hooks/useConfig';
-import { circleManager } from './lib/circleManager';
-import { debugSignal, type DebugState } from './lib/debugStore';
+import { useState, useRef, useEffect } from 'react';
+import { registry } from './modules';
+import type { Module } from './modules/types';
 import Toggle from './components/Toggle';
+import { debugSignal, type DebugState } from './lib/debugStore';
 import './App.css';
 
 export default function App() {
-  const [cfg, update] = useConfig();
+  const modules = registry.getAll();
+  const [enabledMap, setEnabledMap] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(modules.map(m => [m.id, m.enabled]))
+  );
   const [collapsed, setCollapsed] = useState(false);
-  const [radiusDraft, setRadiusDraft] = useState(String(cfg.radius));
   const [debug, setDebug] = useState(false);
   const [dbgState, setDbgState] = useState<DebugState>(debugSignal.get());
   const [visible, setVisible] = useState(true);
@@ -16,14 +18,7 @@ export default function App() {
   const dragging = useRef(false);
   const dragStart = useRef({ mx: 0, my: 0, px: 0, py: 0 });
 
-  useEffect(() => {
-    circleManager.setCfg(cfg);
-  }, [cfg]);
-
-  useEffect(() => {
-    circleManager.tryDrawIfNeeded();
-    return debugSignal.subscribe(setDbgState);
-  }, []);
+  useEffect(() => debugSignal.subscribe(setDbgState), []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -59,10 +54,9 @@ export default function App() {
     dragStart.current = { mx: e.clientX, my: e.clientY, px: pos.x, py: pos.y };
   }
 
-  function commitRadius(raw: string) {
-    const v = Math.max(10, Math.min(3000, parseInt(raw, 10) || cfg.radius));
-    setRadiusDraft(String(v));
-    update({ radius: v });
+  function toggleModule(id: string, enabled: boolean) {
+    registry.setEnabled(id, enabled);
+    setEnabledMap(prev => ({ ...prev, [id]: enabled }));
   }
 
   if (!visible) return null;
@@ -70,12 +64,11 @@ export default function App() {
   return (
     <div id="ogu" style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}>
       <div className="ogu-hdr" onMouseDown={onDragStart}>
-        <span className="ogu-ttl">Okancore GeoGuessr Utils</span>
+        <span className="ogu-ttl">Okancore Utils</span>
         <button
           className="ogu-tog"
           onMouseDown={e => e.stopPropagation()}
           onClick={() => setCollapsed(c => !c)}
-          title={collapsed ? 'Expand' : 'Collapse'}
         >
           {collapsed ? '+' : '−'}
         </button>
@@ -83,68 +76,24 @@ export default function App() {
 
       {!collapsed && (
         <div className="ogu-body">
-          <Row label="Enabled">
-            <Toggle
-              checked={cfg.enabled}
-              onChange={v => {
-                update({ enabled: v });
-                if (v) circleManager.applyAndDraw();
-                else circleManager.drop();
-              }}
-            />
-          </Row>
+          {modules.map((m, i) => (
+            <>
+              {i > 0 && <hr key={`hr-${m.id}`} className="ogu-hr" />}
+              <ModuleCard
+                key={m.id}
+                module={m}
+                enabled={enabledMap[m.id] ?? false}
+                onToggle={v => toggleModule(m.id, v)}
+              />
+            </>
+          ))}
 
           <hr className="ogu-hr" />
 
-          <div className="ogu-radius">
-            <div className="ogu-row">
-              <span className="ogu-lbl">Radius</span>
-              <div className="ogu-field">
-                <input
-                  type="number"
-                  className="ogu-num"
-                  value={radiusDraft}
-                  min={10}
-                  max={3000}
-                  step={10}
-                  onChange={e => setRadiusDraft(e.target.value)}
-                  onBlur={e => commitRadius(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') commitRadius(radiusDraft); }}
-                />
-                <span className="ogu-unit">km</span>
-              </div>
-            </div>
-            <input
-              type="range"
-              className="ogu-range"
-              value={cfg.radius}
-              min={10}
-              max={3000}
-              step={10}
-              onChange={e => {
-                const v = Number(e.target.value);
-                setRadiusDraft(String(v));
-                update({ radius: v });
-                circleManager.setCfg({ ...cfg, radius: v });
-                circleManager.applyAndDraw();
-              }}
-            />
-          </div>
-
-          <hr className="ogu-hr" />
-
-          <button className="ogu-btn" onClick={() => circleManager.applyAndDraw()}>
-            Apply &amp; Draw
-          </button>
-          <button className="ogu-btn ogu-btn-rm" onClick={() => circleManager.drop()}>
-            Remove Circle
-          </button>
-
-          <hr className="ogu-hr" />
-
-          <Row label="Debug">
+          <div className="ogu-row">
+            <span className="ogu-lbl">Debug</span>
             <Toggle checked={debug} onChange={setDebug} />
-          </Row>
+          </div>
 
           {debug && (
             <div className="ogu-dbg">
@@ -163,11 +112,30 @@ export default function App() {
   );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function ModuleCard({
+  module: m,
+  enabled,
+  onToggle,
+}: {
+  module: Module;
+  enabled: boolean;
+  onToggle: (v: boolean) => void;
+}) {
+  const Settings = m.SettingsComponent;
   return (
-    <div className="ogu-row">
-      <span className="ogu-lbl">{label}</span>
-      {children}
+    <div className="ogu-module">
+      <div className="ogu-module-hdr">
+        <div className="ogu-module-info">
+          <span className="ogu-module-name">{m.name}</span>
+          <span className="ogu-module-desc">{m.description}</span>
+        </div>
+        <Toggle checked={enabled} onChange={onToggle} />
+      </div>
+      {enabled && Settings && (
+        <div className="ogu-module-body">
+          <Settings />
+        </div>
+      )}
     </div>
   );
 }
