@@ -4,6 +4,16 @@ A Tampermonkey userscript built with **Vite + React + TypeScript** that overlays
 
 ---
 
+## Fair Use Notice
+
+This tool is intended **exclusively for casual, non-competitive use** — for example, playing with friends in a private party, learning geography, or practicing on your own.
+
+**Do not use this script in ranked matches, competitive duels, or any mode where other players expect a fair game.** Using location hints against unsuspecting opponents is cheating, ruins the experience for others, and goes against GeoGuessr's terms of service.
+
+This project was built as a learning aid and a fun party tool, not as a cheating utility. Please respect other players.
+
+---
+
 ## Modules
 
 | Module | Description |
