@@ -10,10 +10,12 @@ export default defineConfig({
       userscript: {
         name: 'Okancore GeoGuessr Utils',
         namespace: 'https://github.com/canokan917/okancore-geoguessr-utils',
-        version: '1.2.0',
+        version: '1.3.0',
         description: 'GeoGuessr training tools: circle, lat/lng lines, area bands, and street view hider — all toggleable from a draggable panel',
         author: 'Okancore',
         match: ['https://www.geoguessr.com/*'],
+        updateURL: 'https://raw.githubusercontent.com/canokan917/okancore-geoguessr-utils/main/dist/okancore-geoguessr-utils.user.js',
+        downloadURL: 'https://raw.githubusercontent.com/canokan917/okancore-geoguessr-utils/main/dist/okancore-geoguessr-utils.user.js',
         grant: ['GM_getValue', 'GM_setValue', 'GM_addStyle', 'unsafeWindow'],
         'run-at': 'document-start',
       },

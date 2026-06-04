@@ -5,7 +5,7 @@ import Toggle from './components/Toggle';
 import { debugSignal, type DebugState } from './lib/debugStore';
 import './App.css';
 
-export default function App() {
+export default function App({ onRefresh }: { onRefresh?: () => void }) {
   const modules = registry.getAll();
   const [enabledMap, setEnabledMap] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(modules.map(m => [m.id, m.enabled]))
@@ -65,13 +65,12 @@ export default function App() {
     <div id="ogu" style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}>
       <div className="ogu-hdr" onMouseDown={onDragStart}>
         <span className="ogu-ttl">Okancore Utils</span>
-        <button
-          className="ogu-tog"
-          onMouseDown={e => e.stopPropagation()}
-          onClick={() => setCollapsed(c => !c)}
-        >
-          {collapsed ? '+' : '−'}
-        </button>
+        <div style={{ display: 'flex', gap: '2px' }} onMouseDown={e => e.stopPropagation()}>
+          <button className="ogu-tog" title="Re-detect hints" onClick={onRefresh}>↺</button>
+          <button className="ogu-tog" onClick={() => setCollapsed(c => !c)}>
+            {collapsed ? '+' : '−'}
+          </button>
+        </div>
       </div>
 
       {!collapsed && (
@@ -104,6 +103,7 @@ export default function App() {
               <DbgRow label="Circle"       value={dbgState.circleStatus} />
               <DbgRow label="API roundNum" value={dbgState.rawRoundNum} />
               <DbgRow label="API rounds[]" value={dbgState.roundsLen} />
+              <DbgRow label="Last API URL" value={dbgState.lastApiUrl} />
             </div>
           )}
         </div>

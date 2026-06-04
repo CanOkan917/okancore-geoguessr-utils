@@ -13,8 +13,13 @@ export interface GameData {
   id?: string;
   currentRoundNumber?: number;
   rounds: Array<{
-    lat: number;
-    lng: number;
+    lat?: number;
+    lng?: number;
+    panorama?: {
+      lat: number;
+      lng: number;
+      [key: string]: unknown;
+    };
     [key: string]: unknown;
   }>;
 }

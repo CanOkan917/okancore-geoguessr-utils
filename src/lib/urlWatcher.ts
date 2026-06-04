@@ -1,7 +1,7 @@
 type ResetCallback = () => void;
 
 export function watchURL(onReset: ResetCallback): void {
-  const gameRe = /\/(game|challenge)\/([\w-]+)/;
+  const gameRe = /\/(game|challenge|duels|team-duels|live-challenge)\/([\w-]+)/;
   let prevId = (location.href.match(gameRe) ?? [])[2];
 
   new MutationObserver(() => {

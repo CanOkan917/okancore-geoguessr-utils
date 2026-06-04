@@ -8,6 +8,7 @@ export interface DebugState {
   lastEvent: string;
   rawRoundNum: string;
   roundsLen: string;
+  lastApiUrl: string;
 }
 
 const initial: DebugState = {
@@ -18,6 +19,7 @@ const initial: DebugState = {
   lastEvent: '—',
   rawRoundNum: '—',
   roundsLen: '—',
+  lastApiUrl: '—',
 };
 
 export const debugSignal = createSignal<DebugState>({ ...initial });
